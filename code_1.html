@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" /><title>TRAVELER</title>
+    <script
+    src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+    <style type="text/css"> body { margin: 0; }</style>
+</head>
+
+
+
+<body>
+    <style>
+        body, html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        canvas {
+            width: 100vmin;
+        }
+    </style>
+    
+    <script type="text/javascript">
+        
+        var config = {
+            type: Phaser.AUTO,
+            width: 320, height: 240,
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 300 },
+                    debug: true
+                }},
+                scene: {preload: preload, create: create, update: update },
+                antialias: false
+            };
+            
+            new Phaser.Game(config);
+            
+            
+            function preload(){
+
+                //Tileset
+                this.load.image("tuiles", "assets/Plateformes_DamonRomane_JV1B.png");
+
+                //Background
+                this.load.image("background", "assets/Background_DamonRomane_JV1B.png");
+            
+                //Map
+                this.load.tilemapTiledJSON("carte", "assets/Damon_Romane_LeVrai.json"); 
+                
+                //Animation + personnage (si le temps)
+                this.load.spritesheet('animperso', 'assets/perso1.png',
+                { frameWidth: 64, frameHeight: 64 });
+                
+            }
+            
+            
+            function create(){
+                
+                this.clavier = this.input.keyboard.addKeys('Q,D,SPACE');
+                this.cursors = this.input.keyboard.createCursorKeys();
+                
+                
+                //Background
+                this.add.image(800, 800, "background");
+                
+                
+                //Jeu de tuiles
+                const tileset = carteDuNiveau.addTilesetImage(
+                "tuiles_de_jeu",
+                "tuiles"
+                ); 
+                
+                
+                //Map
+                const carteDuNiveau = this.add.tilemap("carte");
+                
+                
+                // chargement du calque calque_background
+                const calque_background = carteDuNiveau.createLayer(
+                "calque_background",
+                tileset
+                );
+
+                
+                //Chargement calque plateformes
+                const calque_plateformes = carteDuNiveau.createLayer(
+                "calque_plateformes",
+                tileset
+                );
+                
+                
+                
+                this.player = this.physics.add.sprite(32, 464, 'animperso')
+                this.physics.add.collider(this.player, Collisions);
+                this.cameras.main.startFollow(this.player);
+                this.cameras.main.zoom = 2;
+                
+                Collisions.setCollisionByProperty({ estSolide: true });
+                
+                
+                
+                
+                //Programmation - Caméra
+                //J'implémente une caméra avec une certaine largeur et hauteur (0, 0, largeur, hauteur)
+                this.physics.world.setBounds(0, 0, 14880, 1000);
+                this.cameras.main.setBounds(0, 0, 14880, 1000);
+                this.cameras.main.startFollow(this.player);
+                
+                
+                
+                // Animation - Sprite
+                // Je cree toutes mes animations, autant pour mon joueur que mes ennemis et mes pièces etc...
+                this.anims.create({
+                    key: 'turn',
+                    frames: [ { key: 'animperso', frame: 0 } ],
+                    frameRate: 10
+                });
+                
+                
+            }
+
+            function update(){
+                
+                // Comportement - Joueur
+                // Ici, c'est tout simplement le code pour gérer le déplacement de mon joueur
+                if (this.cursors.left.isDown || this.clavier.Q.isDown){ 
+                    this.player.setVelocityX(-160); 
+                    this.player.anims.play('marche', true); 
+                }
+                else if (this.cursors.right.isDown || this.clavier.D.isDown){ 
+                    this.player.setVelocityX(160); 
+                    this.player.anims.play('marche', true); 
+                }
+                else if (this.cursors.up.isDown && this.player.body.onFloor() || this.clavier.SPACE.isDown && this.player.body.onFloor()){
+                    this.player.setVelocityY(-300); 
+                }
+                else{
+                    this.player.setVelocityX(0);
+                    this.player.anims.play('turn', true);
+                }
+            }
+            
+            
+            
+            
+            
+        
+        //Fin de ma scène
+        
+        
+        // Programmation - Config
+        // Ma config qui contient des éléments comme la gravité ou même toutes mes scènes repertoriées
+        var config = {
+            pixelArt: true,
+            type: Phaser.AUTO,
+            width: 1280, height: 800, // 1280,  800 px
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 400 },
+                    debug: true
+                }},
+                scene: [mapnulle],
+                input : {gamepad:true},
+            };
+            new Phaser.Game(config);
+            
+            
+        </script>
+    </body>
+    </html>
