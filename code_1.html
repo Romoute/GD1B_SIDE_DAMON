@@ -27,7 +27,8 @@
     </style>
     
     <script type="text/javascript">
-        
+         
+/*    
         var config = {
             type: Phaser.AUTO,
             width: 320, height: 240,
@@ -40,20 +41,29 @@
                 scene: {preload: preload, create: create, update: update },
                 antialias: false
             };
-            
+
             new Phaser.Game(config);
+*/  
+// ---------------     
             
             
-            function preload(){
+// Ici, je définis ma première scène, l'endroit ou débutera le joueur
+
+class mapnulle extends Phaser.Scene{
+            constructor(){
+                super("mapnulle");
+        }
+
+            preload(){
 
                 //Tileset
-                this.load.image("tuiles", "assets/Plateformes_DamonRomane_JV1B.png");
+                this.load.image("Tileset", "assets/Tileset.png");
 
                 //Background
                 this.load.image("background", "assets/Background_DamonRomane_JV1B.png");
             
                 //Map
-                this.load.tilemapTiledJSON("carte", "assets/Damon_Romane_LeVrai.json"); 
+                this.load.tilemapTiledJSON("carte", "assets/Damon_Romane_Carte.json"); 
                 
                 //Animation + personnage (si le temps)
                 this.load.spritesheet('animperso', 'assets/perso1.png',
@@ -62,7 +72,7 @@
             }
             
             
-            function create(){
+            create(){
                 
                 this.clavier = this.input.keyboard.addKeys('Q,D,SPACE');
                 this.cursors = this.input.keyboard.createCursorKeys();
@@ -72,29 +82,33 @@
                 this.add.image(800, 800, "background");
                 
                 
-                //Jeu de tuiles
-                const tileset = carteDuNiveau.addTilesetImage(
-                "tuiles_de_jeu",
-                "tuiles"
-                ); 
+                
                 
                 
                 //Map
                 const carteDuNiveau = this.add.tilemap("carte");
+
+                //Jeu de tuiles
+                const Tileset = carteDuNiveau.addTilesetImage(
+                "Tileset",
+                "Tileset"
+                ); 
                 
                 
                 // chargement du calque calque_background
-                const calque_background = carteDuNiveau.createLayer(
-                "calque_background",
-                tileset
+                const Piques = carteDuNiveau.createLayer(
+                "Piques",
+                Tileset
                 );
 
                 
                 //Chargement calque plateformes
-                const calque_plateformes = carteDuNiveau.createLayer(
-                "calque_plateformes",
-                tileset
+                const Collisions = carteDuNiveau.createLayer(
+                "Collisions",
+                Tileset
                 );
+
+                
                 
                 
                 
@@ -110,8 +124,8 @@
                 
                 //Programmation - Caméra
                 //J'implémente une caméra avec une certaine largeur et hauteur (0, 0, largeur, hauteur)
-                this.physics.world.setBounds(0, 0, 14880, 1000);
-                this.cameras.main.setBounds(0, 0, 14880, 1000);
+                this.physics.world.setBounds(0, 0, 14880, 2000);
+                this.cameras.main.setBounds(0, 0, 14880, 2000);
                 this.cameras.main.startFollow(this.player);
                 
                 
@@ -127,7 +141,7 @@
                 
             }
 
-            function update(){
+            update(){
                 
                 // Comportement - Joueur
                 // Ici, c'est tout simplement le code pour gérer le déplacement de mon joueur
@@ -147,6 +161,7 @@
                     this.player.anims.play('turn', true);
                 }
             }
+        }
             
             
             
