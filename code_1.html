@@ -27,23 +27,28 @@
     </style>
     
     <script type="text/javascript">
-         
-/*    
-        var config = {
-            type: Phaser.AUTO,
-            width: 320, height: 240,
-            physics: {
-                default: 'arcade',
-                arcade: {
-                    gravity: { y: 300 },
-                    debug: true
-                }},
-                scene: {preload: preload, create: create, update: update },
-                antialias: false
-            };
 
-            new Phaser.Game(config);
-*/  
+
+
+
+        // Variable controlleur
+            var gamepadConnected = false;
+            var gamepad;
+            var gamepadButtons;
+/*
+        // Variable wall jump
+        var wallJump = true;
+        var pDeplacementY = 210;
+
+        function blocageTouche () {
+            offTouche = false;
+        }
+
+        function cdWallJump () {
+            wallJump = true;
+        }
+      */   
+
 // ---------------     
             
             
@@ -138,13 +143,33 @@ class mapnulle extends Phaser.Scene{
                     frameRate: 10
                 });
                 
+                // Comportement - Joueur
+                // Ici, le code pour gérer le déplacement de mon joueur (manette)
+                this.input.gamepad.on('connected', () => {
+                    gamepad = this.input.gamepad.pad1;
+                    console.log("Controller connected!");
+                    
+                    gamepadButtons = {
+                        'left': gamepad.buttons[14],
+                        'right': gamepad.buttons[15],
+                        'jump': gamepad.buttons[0],
+                        'pause': gamepad.buttons[9]
+                    };
+                    
+                    gamepadConnected = true;
+                });
+                
+                this.input.gamepad.on('disconnected', () => {
+                    console.log("Controller disconnected!");
+                    gamepadConnected = false;
+                });
                 
             }
 
             update(){
                 
-                // Comportement - Joueur
-                // Ici, c'est tout simplement le code pour gérer le déplacement de mon joueur
+                
+                // Ici, le code pour gérer le déplacement de mon joueur (clavier)
                 if (this.cursors.left.isDown || this.clavier.Q.isDown){ 
                     this.player.setVelocityX(-160); 
                     this.player.anims.play('marche', true); 
@@ -163,8 +188,39 @@ class mapnulle extends Phaser.Scene{
             }
         }
             
+/*
+                // Wall Jump 
+                if (this.cursors.up.isDown && this.player.body.blocked.right || this.clavier.SPACE.isDown && this.player.body.blocked.right || gamepadButtons?.jump.pressed && this.player.body.blocked.right) {
+                    if (wallJump == true) {
+
+                        wallJump = false;
+                        offTouche = true;
+
+                        setTimeout(cdWallJump, 500);
+                        setTimeout(blocageTouche, 200);
+
+                        this.player.setVelocityY(-pDeplacementY);
+                        this.player.setVelocityX(-50);
+                        
+                    }
+                }
+                
+                if (this.cursors.up.isDown && this.player.body.blocked.left || this.clavier.SPACE.isDown && this.player.body.blocked.left || gamepadButtons?.jump.pressed && this.player.body.blocked.left) {
+                    if (wallJump == true) {
+
+                        wallJump = false;
+                        offTouche = true;
+
+                        setTimeout(cdWallJump, 500);
+                        setTimeout(blocageTouche, 200);
+
+                        this.player.setVelocityY(-pDeplacementY);
+                        this.player.setVelocityX(50);
+                        
+                    }
+                }           
             
-            
+*/            
             
             
         
@@ -181,7 +237,7 @@ class mapnulle extends Phaser.Scene{
                 default: 'arcade',
                 arcade: {
                     gravity: { y: 400 },
-                    debug: true
+                    debug: false
                 }},
                 scene: [mapnulle],
                 input : {gamepad:true},
