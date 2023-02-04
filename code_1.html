@@ -73,6 +73,12 @@ class mapnulle extends Phaser.Scene{
                 //Animation + personnage (si le temps)
                 this.load.spritesheet('animperso', 'assets/perso1.png',
                 { frameWidth: 64, frameHeight: 64 });
+
+
+                //Coeurs
+                this.load.image("hp1", "assets/hp1.png");
+                this.load.image("hp2", "assets/hp2.png");
+                this.load.image("hp3", "assets/hp3.png");
                 
             }
             
@@ -84,7 +90,8 @@ class mapnulle extends Phaser.Scene{
                 
                 
                 //Background
-                this.add.image(800, 800, "background");
+                this.background = this.add.image(800, 800, "background");
+                this.background.setScrollFactor(0.9, 1);
                 
                 
                 
@@ -102,7 +109,7 @@ class mapnulle extends Phaser.Scene{
                 
                 // chargement du calque calque_background
                 const Piques = carteDuNiveau.createLayer(
-                "Piques",
+                "Pics",
                 Tileset
                 );
 
@@ -113,24 +120,46 @@ class mapnulle extends Phaser.Scene{
                 Tileset
                 );
 
+
+                Collisions.setCollisionByProperty({ estSolide: true });
+                Piques.setCollisionByExclusion(-1, true); 
                 
                 
-                
-                
-                this.player = this.physics.add.sprite(32, 464, 'animperso')
+                this.player = this.physics.add.sprite(32, 1504, 'animperso');
+
+                this.player.hp = 3; 
+                this.player.invincible = false; 
+                this.player.invincibleFrame = 200; 
+                this.player.wallJumping = true; 
+
+
+                this.hpUI = this.add.image(325, 210, "hp3").setScale(0.2).setOrigin(0,0);
+                this.hpUI.setScrollFactor(0);
+                this.hpUI.setDepth(11);
+
+
+                this.player.setCollideWorldBounds(true);
                 this.physics.add.collider(this.player, Collisions);
+
+                this.physics.add.overlap(this.player, Piques,
+                    this.takeDamages,
+                    function process(sprite, tile) {
+                        return tile.collides;
+                    }
+                );
+
                 this.cameras.main.startFollow(this.player);
                 this.cameras.main.zoom = 2;
                 
-                Collisions.setCollisionByProperty({ estSolide: true });
+               
                 
                 
                 
                 
                 //Programmation - Caméra
                 //J'implémente une caméra avec une certaine largeur et hauteur (0, 0, largeur, hauteur)
-                this.physics.world.setBounds(0, 0, 14880, 2000);
-                this.cameras.main.setBounds(0, 0, 14880, 2000);
+                this.physics.world.setBounds(0, 0, 1600, 1600);
+                this.cameras.main.setBounds(0, 0, 1600, 1600);
                 this.cameras.main.startFollow(this.player);
                 
                 
@@ -178,15 +207,103 @@ class mapnulle extends Phaser.Scene{
                     this.player.setVelocityX(160); 
                     this.player.anims.play('marche', true); 
                 }
-                else if (this.cursors.up.isDown && this.player.body.onFloor() || this.clavier.SPACE.isDown && this.player.body.onFloor()){
-                    this.player.setVelocityY(-300); 
-                }
                 else{
                     this.player.setVelocityX(0);
                     this.player.anims.play('turn', true);
                 }
+
+
+                if (this.cursors.up.isDown && this.player.body.onFloor() || this.clavier.SPACE.isDown && this.player.body.onFloor()){
+                    this.player.setVelocityY(-300); 
+                }
+
+
+                if(this.player.invincible){
+                    this.player.invincibleFrame-- ;
+                    if(this.player.invincibleFrame == 0){
+                            this.player.invincibleFrame = 200;
+                            this.player.setTint(0xffffff);
+                            this.player.invincible = false ;
+                    }
+                }
+
+            
+                
+                if(this.player.hp == 3){
+                    this.hpUI.setTexture("hp3");
+                }
+                if(this.player.hp == 2){
+                    this.hpUI.setTexture("hp2");
+                }
+                if(this.player.hp == 1){
+                    this.hpUI.setTexture("hp1");
+                }
+                if(this.player.hp < 1){
+                    this.isDead(); 
+                }
+
+
+
+                //Walljump
+
+                if (this.cursors.up.isDown && this.player.body.blocked.right || this.clavier.SPACE.isDown && this.player.body.blocked.right || gamepadButtons?.jump.pressed && this.player.body.blocked.right) {
+                    if (this.player.wallJumping == true) {
+
+                        this.player.wallJumping = false;
+
+                        this.time.delayedCall(500, () => {
+                            this.cdWallJump(); 
+                        });
+                   
+                        this.player.setVelocityY(-200);
+                        
+                        
+                    }
+                }
+                
+                if (this.cursors.up.isDown && this.player.body.blocked.left || this.clavier.SPACE.isDown && this.player.body.blocked.left || gamepadButtons?.jump.pressed && this.player.body.blocked.left) {
+                    if (this.player.wallJumping == true) {
+
+                        this.player.wallJumping = false;
+
+                        this.time.delayedCall(500, () => {
+                            this.cdWallJump(); 
+                        });
+
+                        this.player.setVelocityY(-200);
+                       
+                        
+                    }
+                }  
+
+
+
+
+
             }
+
+            takeDamages(player, pique){
+                if(!player.invincible){
+                    player.invincible = true;
+                    player.hp -= 1;
+                    player.setTint(0xff0000);
+                    player.scene.cameras.main.shake(110, 0.01);
+                } 
+            }
+
+            isDead(){
+                this.player.hp = 3; 
+                this.player.invincible = false; 
+                this.scene.restart();  
+            }
+
+
+            cdWallJump () {
+                this.player.wallJumping = true;
+            }
+
         }
+        
             
 /*
                 // Wall Jump 
