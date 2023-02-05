@@ -35,19 +35,6 @@
             var gamepadConnected = false;
             var gamepad;
             var gamepadButtons;
-/*
-        // Variable wall jump
-        var wallJump = true;
-        var pDeplacementY = 210;
-
-        function blocageTouche () {
-            offTouche = false;
-        }
-
-        function cdWallJump () {
-            wallJump = true;
-        }
-      */   
 
 // ---------------     
             
@@ -305,43 +292,8 @@ class mapnulle extends Phaser.Scene{
         }
         
             
-/*
-                // Wall Jump 
-                if (this.cursors.up.isDown && this.player.body.blocked.right || this.clavier.SPACE.isDown && this.player.body.blocked.right || gamepadButtons?.jump.pressed && this.player.body.blocked.right) {
-                    if (wallJump == true) {
 
-                        wallJump = false;
-                        offTouche = true;
-
-                        setTimeout(cdWallJump, 500);
-                        setTimeout(blocageTouche, 200);
-
-                        this.player.setVelocityY(-pDeplacementY);
-                        this.player.setVelocityX(-50);
-                        
-                    }
-                }
-                
-                if (this.cursors.up.isDown && this.player.body.blocked.left || this.clavier.SPACE.isDown && this.player.body.blocked.left || gamepadButtons?.jump.pressed && this.player.body.blocked.left) {
-                    if (wallJump == true) {
-
-                        wallJump = false;
-                        offTouche = true;
-
-                        setTimeout(cdWallJump, 500);
-                        setTimeout(blocageTouche, 200);
-
-                        this.player.setVelocityY(-pDeplacementY);
-                        this.player.setVelocityX(50);
-                        
-                    }
-                }           
-            
-*/            
-            
-            
         
-        //Fin de ma scène
         
         
         // Programmation - Config
